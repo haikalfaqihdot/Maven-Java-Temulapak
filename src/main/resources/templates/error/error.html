@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell-sederhana :: shell('Terjadi kesalahan', ~{::main})}">
+<body>
+<main class="error-page wrap">
+    <div class="big">Oops</div>
+    <h1 style="margin-top: 10px;">Terjadi kesalahan</h1>
+    <p class="muted" th:text="${pesan} ?: 'Permintaan tidak dapat diproses. Coba lagi beberapa saat.'">Permintaan tidak dapat diproses. Coba lagi beberapa saat.</p>
+    <a class="btn btn-dark" th:href="@{/}">Kembali ke beranda</a>
+</main>
+</body>
+</html>

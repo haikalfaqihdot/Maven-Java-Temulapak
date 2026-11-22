@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell-sederhana :: shell('Halaman tidak ditemukan', ~{::main})}">
+<body>
+<main class="error-page wrap">
+    <div class="big">404</div>
+    <h1 style="margin-top: 10px;">Halaman tidak ditemukan</h1>
+    <p class="muted" th:text="${pesan} ?: 'Alamat yang Anda buka tidak ada atau sudah dipindahkan.'">Alamat yang Anda buka tidak ada atau sudah dipindahkan.</p>
+    <a class="btn btn-dark" th:href="@{/}">Kembali ke beranda</a>
+</main>
+</body>
+</html>

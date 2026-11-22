@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- Kerangka halaman: navbar + konten + footer -->
+<html lang="id" xmlns:th="http://www.thymeleaf.org" th:fragment="shell(title, active, content)">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+<header th:replace="~{fragments/navbar :: navbar(${active})}"></header>
+<div class="wrap" style="padding-top: 16px;" th:if="${success != null or error != null}">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+</div>
+<div th:replace="${content}"></div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

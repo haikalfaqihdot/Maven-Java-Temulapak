@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Semua Tempat', 'tempat', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/admin/verifikasi}">Beranda</a><i class="bi bi-chevron-right"></i><b>Semua Tempat</b></nav>
+            <h1>Semua Tempat</h1>
+            <p class="sub">Seluruh listing beserta status verifikasi dan status tempat.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <div class="table-card" th:if="${not #lists.isEmpty(daftar)}"><div class="table-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Tempat</th><th>Pemilik</th><th>Harga sewa</th><th>Verifikasi</th><th>Status tempat</th><th>Aksi</th></tr></thead>
+                    <tbody>
+                    <tr th:each="t : ${daftar}">
+                        <td><b th:text="${t.namaTempat}">Tempat</b><span class="sm" th:text="${t.jenisTempat} + ' · ' + ${t.lokasi}">Kios</span></td>
+                        <td th:text="${t.pemilik.nama}">Pemilik</td>
+                        <td th:text="${@fmt.rupiah(t.hargaSewa)} + ' / ' + ${t.satuan().satuan}">Rp 0</td>
+                        <td><span th:replace="~{fragments/layout :: badge(${t.statusVerifikasi.label}, ${t.statusVerifikasi.name().toLowerCase()})}"></span></td>
+                        <td><span th:replace="~{fragments/layout :: badge(${t.statusTampil.label}, ${t.statusTampil.css})}"></span></td>
+                        <td><a class="btn btn-line btn-sm" th:href="@{/admin/verifikasi/{id}(id=${t.idTempat})}">Periksa</a></td>
+                    </tr>
+                    </tbody>
+                </table></div></div>
+            <div class="card empty" th:if="${#lists.isEmpty(daftar)}">Belum ada tempat.</div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

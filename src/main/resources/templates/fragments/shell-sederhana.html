@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<!-- Kerangka halaman error: tanpa navbar berbasis keamanan -->
+<html lang="id" xmlns:th="http://www.thymeleaf.org" th:fragment="shell(title, content)">
+<head th:replace="~{fragments/layout :: head(${title})}"></head>
+<body>
+<header class="nav"><div class="wrap nav-in"><a class="brand" th:href="@{/}"><span class="brand-mark"><i class="bi bi-shop"></i></span>TemuLapak</a></div></header>
+<div th:replace="${content}"></div>
+</body>
+</html>

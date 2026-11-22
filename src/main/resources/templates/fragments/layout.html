@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | TemuLapak'">TemuLapak</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/app.js}"></script>
+</th:block>
+
+<!-- Pesan sukses / error -->
+<div th:fragment="flash">
+    <div class="alert-flash ok" role="status" th:if="${success}" th:text="${success}"></div>
+    <div class="alert-flash bad" role="alert" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<!-- Chip status: badge(teks, kunci) -->
+<span th:fragment="badge(label, key)" class="chip-st" th:classappend="'st-' + ${key}">
+    <i class="bi" th:classappend="${key == 'available' or key == 'approved'} ? 'bi-check2' : (${key == 'pending'} ? 'bi-clock' : (${key == 'terisi'} ? 'bi-lock' : (${key == 'completed'} ? 'bi-check2-all' : 'bi-x-lg')))"></i>
+    <span th:text="${label}">Status</span>
+</span>
+
+<!-- Bintang rating -->
+<span th:fragment="stars(value)" class="stars" th:style="'--r:' + ${value}" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+
+<!-- Kartu lapak -->
+<article th:fragment="tempatCard(t)" class="lapak">
+    <a class="lapak-media" th:href="@{/tempat/{id}(id=${t.idTempat})}" tabindex="-1" aria-hidden="true">
+        <img th:src="@{${t.fotoUtama}}" th:alt="${t.namaTempat}" loading="lazy">
+    </a>
+    <div class="lapak-body">
+        <div class="lapak-top">
+            <span class="kind" th:text="${t.jenisTempat}">KIOS</span>
+            <span th:replace="~{fragments/layout :: badge(${t.statusTampil.label}, ${t.statusTampil.css})}"></span>
+        </div>
+        <h3 class="lapak-title"><a th:href="@{/tempat/{id}(id=${t.idTempat})}" th:text="${t.namaTempat}">Nama tempat</a></h3>
+        <div class="lapak-loc"><i class="bi bi-geo-alt"></i><span th:text="${t.lokasi}">Lokasi</span></div>
+        <div class="lapak-price"><span th:text="${@fmt.rupiah(t.hargaSewa)}">Rp 0</span><small th:text="'/ ' + ${t.satuan().satuan}">/ bulan</small></div>
+        <div class="lapak-note"><i class="bi bi-lightning-charge"></i><span th:text="${t.ringkasBiaya}">Ringkasan biaya</span></div>
+        <div class="lapak-fas"><i class="bi bi-check2"></i><span th:text="${t.fasilitasRingkas}">Listrik · Air</span></div>
+        <a class="btn btn-line btn-block" th:href="@{/tempat/{id}(id=${t.idTempat})}">Lihat Detail</a>
+    </div>
+</article>
+
+</body>
+</html>

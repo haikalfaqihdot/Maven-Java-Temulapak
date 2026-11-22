@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<header th:fragment="navbar(active)" class="nav">
+    <div class="wrap nav-in">
+        <a class="brand" th:href="@{/}"><span class="brand-mark"><i class="bi bi-shop"></i></span>TemuLapak</a>
+        <button class="nav-toggle" type="button" aria-label="Buka menu" aria-expanded="false"><i class="bi bi-list"></i></button>
+
+        <div class="nav-menu">
+            <!-- Tamu -->
+            <nav class="nav-links" sec:authorize="!isAuthenticated()" aria-label="Menu utama">
+                <a th:href="@{/}" th:classappend="${active == 'home'} ? 'on'">Beranda</a>
+                <a th:href="@{/tempat}" th:classappend="${active == 'cari'} ? 'on'">Cari Lapak</a>
+                <a th:href="@{/#cara-sewa}">Cara Sewa</a>
+            </nav>
+            <div class="nav-right" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}">Masuk / Daftar</a>
+                <a class="btn btn-dark btn-sm" th:href="@{/register(role='pemilik')}">Daftarkan Tempat</a>
+            </div>
+
+            <!-- Penyewa -->
+            <nav class="nav-links" sec:authorize="hasRole('PENYEWA')" aria-label="Menu penyewa">
+                <a th:href="@{/}" th:classappend="${active == 'home'} ? 'on'">Beranda</a>
+                <a th:href="@{/tempat}" th:classappend="${active == 'cari'} ? 'on'">Cari Lapak</a>
+                <a th:href="@{/penyewa/riwayat-booking}" th:classappend="${active == 'booking'} ? 'on'">Booking Saya</a>
+                <a th:href="@{/#cara-sewa}">Cara Sewa</a>
+            </nav>
+            <div class="nav-right" sec:authorize="hasRole('PENYEWA')">
+                <a th:href="@{/penyewa/riwayat-booking}"><i class="bi bi-bell"></i> Notifikasi</a>
+                <span class="nav-user"><span class="avatar"><i class="bi bi-person"></i></span>
+                    <span><span class="nm" sec:authentication="principal.nama">Nama</span><span class="rl">Penyewa</span></span></span>
+                <form th:action="@{/logout}" method="post" class="m-0"><button class="nav-btn" type="submit">Keluar</button></form>
+            </div>
+
+            <!-- Pemilik -->
+            <nav class="nav-links" sec:authorize="hasRole('PEMILIK')" aria-label="Menu pemilik">
+                <a th:href="@{/}" th:classappend="${active == 'home'} ? 'on'">Beranda</a>
+                <a th:href="@{/pemilik/tempat}" th:classappend="${active == 'tempat'} ? 'on'">Tempat Saya</a>
+                <a th:href="@{/pemilik/booking}" th:classappend="${active == 'booking'} ? 'on'">Booking Masuk</a>
+            </nav>
+            <div class="nav-right" sec:authorize="hasRole('PEMILIK')">
+                <a class="btn btn-dark btn-sm" th:href="@{/pemilik/tempat/baru}">Tambah Tempat</a>
+                <a th:href="@{/pemilik/booking}"><i class="bi bi-bell"></i> Notifikasi</a>
+                <a class="nav-user" th:href="@{/pemilik/profil}" title="Profil"><span class="avatar"><i class="bi bi-person"></i></span>
+                    <span><span class="nm" sec:authentication="principal.nama">Nama</span><span class="rl">Pemilik</span></span></a>
+                <form th:action="@{/logout}" method="post" class="m-0"><button class="nav-btn" type="submit">Keluar</button></form>
+            </div>
+
+            <!-- Admin -->
+            <nav class="nav-links" sec:authorize="hasRole('ADMIN')" aria-label="Menu admin">
+                <a th:href="@{/admin/verifikasi}" th:classappend="${active == 'verifikasi'} ? 'on'">Antrean Verifikasi</a>
+                <a th:href="@{/admin/tempat}" th:classappend="${active == 'tempat'} ? 'on'">Semua Tempat</a>
+                <a th:href="@{/admin/pengguna}" th:classappend="${active == 'pengguna'} ? 'on'">Pengguna</a>
+                <a th:href="@{/admin/booking}" th:classappend="${active == 'booking'} ? 'on'">Booking</a>
+                <a th:href="@{/admin/ulasan}" th:classappend="${active == 'ulasan'} ? 'on'">Ulasan</a>
+            </nav>
+            <div class="nav-right" sec:authorize="hasRole('ADMIN')">
+                <span class="nav-user"><span class="avatar"><i class="bi bi-person"></i></span>
+                    <span><span class="nm" sec:authentication="principal.nama">Admin</span><span class="rl">Admin</span></span></span>
+                <form th:action="@{/logout}" method="post" class="m-0"><button class="nav-btn" type="submit">Keluar</button></form>
+            </div>
+        </div>
+    </div>
+</header>
+</body>
+</html>

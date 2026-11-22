@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Ajukan Booking', 'cari', ~{::main})}">
+<body>
+<main>
+<form th:action="@{/penyewa/booking/{id}(id=${tempat.idTempat})}" th:object="${form}" method="post" novalidate>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi">
+                <a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/tempat}">Cari Lapak</a><i class="bi bi-chevron-right"></i>
+                <a th:href="@{/tempat/{id}(id=${tempat.idTempat})}" th:text="${tempat.namaTempat}">Tempat</a><i class="bi bi-chevron-right"></i><b>Ajukan Booking</b>
+            </nav>
+            <h1>Ajukan Booking</h1>
+            <p class="sub">Isi tanggal sewa. Pengajuan akan dikirim ke pemilik untuk dikonfirmasi.</p>
+        </div>
+    </section>
+
+    <section class="page-body">
+        <div class="wrap layout-2 wide-side">
+            <div class="stack">
+                <div class="card">
+                    <h2>Tempat yang diajukan</h2>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <img th:src="@{${tempat.fotoUtama}}" alt="" style="width: 110px; height: 76px; object-fit: cover; border-radius: 10px;">
+                        <div>
+                            <b style="font-size: 17px;" th:text="${tempat.namaTempat}">Tempat</b>
+                            <div class="small muted" style="margin: 3px 0 6px;"><i class="bi bi-geo-alt"></i> <span th:text="${tempat.lokasi}">Lokasi</span></div>
+                            <span th:replace="~{fragments/layout :: badge(${tempat.statusTampil.label}, ${tempat.statusTampil.css})}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Periode sewa</h2>
+                    <div class="grid-2">
+                        <div class="field" style="margin-bottom: 10px;">
+                            <label for="tanggalMulai">Tanggal mulai *</label>
+                            <input class="input" type="date" id="tanggalMulai" name="tanggalMulai" th:value="${form.tanggalMulai}">
+                            <div class="hint">Tidak boleh sebelum tanggal pengajuan</div>
+                            <div class="err" th:if="${#fields.hasErrors('tanggalMulai')}" th:errors="*{tanggalMulai}"></div>
+                        </div>
+                        <div class="field" style="margin-bottom: 10px;">
+                            <label for="tanggalSelesai">Tanggal selesai *</label>
+                            <input class="input" type="date" id="tanggalSelesai" name="tanggalSelesai" th:value="${form.tanggalSelesai}">
+                            <div class="hint">Harus setelah tanggal mulai</div>
+                            <div class="err" th:if="${#fields.hasErrors('tanggalSelesai')}" th:errors="*{tanggalSelesai}"></div>
+                        </div>
+                    </div>
+                    <div class="notice" style="margin-bottom: 16px;"><i class="bi bi-calendar3"></i><span id="durasiPesan">Pilih tanggal mulai dan selesai</span></div>
+                    <div class="small muted" style="margin-bottom: 16px;" th:if="${not #lists.isEmpty(periodeTerisi)}">
+                        Periode yang sudah terisi (tidak dapat dipilih):
+                        <span th:each="b, st : ${periodeTerisi}" th:text="${@fmt.periode(b.tanggalMulai, b.tanggalSelesai)} + (${st.last} ? '' : '; ')"></span>
+                    </div>
+                    <div class="field" style="margin-bottom: 0;">
+                        <label for="catatan">Catatan untuk pemilik (opsional)</label>
+                        <textarea class="textarea" id="catatan" name="catatan" th:text="${form.catatan}" placeholder="Contoh: Saya berjualan minuman dan ingin mulai di awal bulan."></textarea>
+                        <div class="hint">Catatan dibaca pemilik sebelum memutuskan.</div>
+                        <div class="err" th:if="${#fields.hasErrors('catatan')}" th:errors="*{catatan}"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Ringkasan aturan sewa</h2>
+                    <ul class="check-list" style="margin-top: 0;">
+                        <li><i class="bi bi-check2"></i><span>Durasi minimal <span th:text="${tempat.durasiMinimal ?: '-'}">3 bulan</span>.</span></li>
+                        <li><i class="bi bi-check2"></i><span th:text="${tempat.perpanjangan ?: '-'}">Perpanjangan</span></li>
+                        <li><i class="bi bi-check2"></i><span th:text="${tempat.pembayaran ?: '-'}">Pembayaran</span></li>
+                        <li><i class="bi bi-check2"></i><span>Pengajuan yang masih menunggu konfirmasi bisa dibatalkan tanpa biaya.</span></li>
+                    </ul>
+                    <a class="link-arrow" th:href="@{/tempat/{id}(id=${tempat.idTempat})} + '#aturan'">Lihat aturan lengkap</a>
+                </div>
+            </div>
+
+            <aside>
+                <div class="card sticky" id="rincianBiaya" th:attr="data-url=@{/penyewa/booking/{id}/rincian(id=${tempat.idTempat})}">
+                    <h2>Rincian biaya sesuai periode</h2>
+                    <p class="small muted" id="rincianKosong">Pilih tanggal mulai dan selesai untuk melihat rincian biaya.</p>
+                    <div id="rincianIsi" hidden>
+                        <div id="rincianBaris"></div>
+                        <div class="cost-total"><b>Estimasi total</b><b id="rincianTotal">Rp 0</b></div>
+                    </div>
+                    <p class="foot-note">Tagihan listrik mengikuti pemakaian sebenarnya. Tidak ada pembayaran di langkah ini.</p>
+                    <button class="btn btn-dark btn-block" type="submit">Kirim Pengajuan</button>
+                    <a class="btn btn-link btn-block" th:href="@{/tempat/{id}(id=${tempat.idTempat})}">Batal</a>
+                </div>
+            </aside>
+        </div>
+    </section>
+</form>
+</main>
+</body>
+</html>

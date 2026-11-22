@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Masuk', '', ~{::main})}">
+<body>
+<main class="auth-wrap">
+    <div class="wrap">
+        <div class="auth-card">
+            <div class="auth-side">
+                <div class="ico-big"><i class="bi bi-shop"></i></div>
+                <h2>Selamat datang kembali</h2>
+                <p>Masuk untuk mencari lapak, mengajukan booking, atau mengelola tempat usaha Anda.</p>
+                <ul>
+                    <li><i class="bi bi-check2"></i>Biaya dan aturan sewa terlihat jelas</li>
+                    <li><i class="bi bi-check2"></i>Pantau status pengajuan booking</li>
+                    <li><i class="bi bi-check2"></i>Kelola listing dan booking masuk</li>
+                </ul>
+            </div>
+            <div class="auth-main">
+                <h1>Masuk ke TemuLapak</h1>
+                <p class="sub">Gunakan email dan kata sandi Anda.</p>
+
+                <div class="alert-flash bad" role="alert" th:if="${param.error}">Email atau kata sandi salah. Periksa kembali lalu coba lagi.</div>
+                <div class="alert-flash ok" role="status" th:if="${param.registered}">Akun berhasil dibuat. Silakan masuk.</div>
+                <div class="alert-flash ok" role="status" th:if="${param.logout}">Anda sudah keluar.</div>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="field">
+                        <label for="email">Email *</label>
+                        <input class="input" id="email" type="email" name="email" placeholder="nama@contoh.id" autocomplete="username" required autofocus>
+                        <div class="hint">Gunakan email yang terdaftar</div>
+                    </div>
+                    <div class="field">
+                        <label for="password">Kata sandi *</label>
+                        <input class="input" id="password" type="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+                        <div class="hint">Minimal 8 karakter</div>
+                    </div>
+                    <button class="btn btn-dark btn-block" type="submit">Masuk</button>
+                </form>
+                <p class="center" style="margin: 16px 0;">Belum punya akun? <a href="/register" th:href="@{/register}"><b>Daftar</b></a></p>
+                <div class="notice"><i class="bi bi-info-circle"></i>
+                    <span>Setelah masuk, Anda diarahkan ke beranda sesuai peran: Penyewa, Pemilik Tempat, atau Admin. Akun Admin tidak dibuat lewat form publik.</span></div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Profil', 'profil', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><b>Profil</b></nav>
+            <h1>Profil</h1>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap" style="max-width: 560px;">
+            <form class="card" th:action="@{/pemilik/profil}" th:object="${form}" method="post" novalidate>
+                <div class="field"><label for="emailAkun">Email</label><input class="input" id="emailAkun" type="email" th:value="${email}" disabled></div>
+                <div class="field">
+                    <label for="nama">Nama</label>
+                    <input class="input" id="nama" type="text" th:field="*{nama}" th:errorclass="invalid">
+                    <div class="err" th:if="${#fields.hasErrors('nama')}" th:errors="*{nama}"></div>
+                </div>
+                <div class="field">
+                    <label for="noTelepon">Nomor telepon</label>
+                    <input class="input" id="noTelepon" type="tel" th:field="*{noTelepon}" th:errorclass="invalid">
+                    <div class="err" th:if="${#fields.hasErrors('noTelepon')}" th:errors="*{noTelepon}"></div>
+                </div>
+                <button class="btn btn-dark" type="submit">Simpan Profil</button>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

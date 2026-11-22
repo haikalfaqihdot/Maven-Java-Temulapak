@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell-sederhana :: shell('Akses ditolak', ~{::main})}">
+<body>
+<main class="error-page wrap">
+    <div class="big">403</div>
+    <h1 style="margin-top: 10px;">Akses ditolak</h1>
+    <p class="muted" th:text="${pesan} ?: 'Akun Anda tidak memiliki izin untuk membuka halaman ini.'">Akun Anda tidak memiliki izin untuk membuka halaman ini.</p>
+    <a class="btn btn-dark" th:href="@{/}">Kembali ke beranda</a>
+</main>
+</body>
+</html>

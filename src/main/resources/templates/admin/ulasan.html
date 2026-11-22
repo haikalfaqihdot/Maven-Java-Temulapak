@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Ulasan', 'ulasan', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/admin/verifikasi}">Beranda</a><i class="bi bi-chevron-right"></i><b>Ulasan</b></nav>
+            <h1>Ulasan</h1>
+            <p class="sub">Semua ulasan penyewa.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <div class="table-card" th:if="${not #lists.isEmpty(daftar)}"><div class="table-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Tempat</th><th>Penyewa</th><th>Rating</th><th>Komentar</th></tr></thead>
+                    <tbody>
+                    <tr th:each="u : ${daftar}">
+                        <td><b th:text="${u.tempat.namaTempat}">Tempat</b></td>
+                        <td th:text="${u.penyewa.nama}">Penyewa</td>
+                        <td><span th:replace="~{fragments/layout :: stars(${u.rating})}"></span></td>
+                        <td th:text="${u.komentar ?: '-'}">Komentar</td>
+                    </tr>
+                    </tbody>
+                </table></div></div>
+            <div class="card empty" th:if="${#lists.isEmpty(daftar)}">Belum ada ulasan.</div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

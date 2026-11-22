@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/shell :: shell(${tempat.namaTempat}, 'cari', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi">
+                <a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/tempat}">Cari Lapak</a><i class="bi bi-chevron-right"></i><b th:text="${tempat.namaTempat}">Nama</b>
+            </nav>
+            <div class="row-end">
+                <div>
+                    <h1 th:text="${tempat.namaTempat}">Nama tempat</h1>
+                    <div class="meta-row">
+                        <span><i class="bi bi-shop"></i><span th:text="${tempat.jenisTempat}">Kios</span></span>
+                        <span><i class="bi bi-geo-alt"></i><span th:text="${tempat.lokasi}">Lokasi</span></span>
+                    </div>
+                </div>
+                <span th:replace="~{fragments/layout :: badge(${tempat.statusTampil.label}, ${tempat.statusTampil.css})}"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-body">
+        <div class="wrap layout-2">
+            <div class="stack">
+                <div>
+                    <img id="galeriUtama" class="gallery-main" th:src="@{${tempat.fotoUtama}}" th:alt="${tempat.namaTempat}">
+                    <div class="gallery-thumbs" th:if="${tempat.fotoList.size() > 1}">
+                        <img th:each="f, st : ${tempat.fotoList}" th:if="${st.index < 4}" th:src="@{${f.urlFoto}}"
+                             th:classappend="${st.first} ? 'on'" th:alt="'Foto ' + ${st.count}">
+                    </div>
+                </div>
+
+                <div class="card" th:if="${tempat.deskripsi != null}">
+                    <h2>Deskripsi</h2>
+                    <p class="muted" style="margin: 0;" th:text="${tempat.deskripsi}">Deskripsi</p>
+                </div>
+
+                <div class="card">
+                    <h2>Informasi tempat</h2>
+                    <div class="info-3">
+                        <div><div class="k">Jenis tempat</div><div class="v" th:text="${tempat.jenisTempat}">Kios</div></div>
+                        <div><div class="k">Ukuran</div><div class="v" th:text="${tempat.ukuran ?: '-'}">3 × 4 m</div></div>
+                        <div><div class="k">Kondisi</div><div class="v" th:text="${tempat.kondisi ?: '-'}">Baik</div></div>
+                    </div>
+                    <p class="small muted" style="margin: 14px 0 0;">Alamat: <span th:text="${tempat.alamatLengkap ?: tempat.lokasi}">Alamat</span></p>
+                </div>
+
+                <div class="card">
+                    <h2>Fasilitas</h2>
+                    <div class="fas-pills" th:if="${not #sets.isEmpty(tempat.fasilitas)}">
+                        <span class="pill-static" th:each="f : ${tempat.fasilitas}"><i class="bi bi-check2"></i><span th:text="${f.namaFasilitas}">Listrik</span></span>
+                    </div>
+                    <p class="muted" style="margin: 0;" th:if="${#sets.isEmpty(tempat.fasilitas)}">Pemilik belum mencantumkan fasilitas.</p>
+                </div>
+
+                <div class="card" id="aturan">
+                    <h2>Aturan sewa</h2>
+                    <div class="rule"><span class="ico-circle"><i class="bi bi-calendar3"></i></span><div><b>Durasi minimal</b><span th:text="${tempat.durasiMinimal ?: '-'}">3 bulan.</span></div></div>
+                    <div class="rule"><span class="ico-circle"><i class="bi bi-arrow-repeat"></i></span><div><b>Perpanjangan</b><span th:text="${tempat.perpanjangan ?: '-'}">-</span></div></div>
+                    <div class="rule"><span class="ico-circle"><i class="bi bi-credit-card"></i></span><div><b>Pembayaran</b><span th:text="${tempat.pembayaran ?: '-'}">-</span></div></div>
+                    <div class="rule"><span class="ico-circle"><i class="bi bi-x-lg"></i></span><div><b>Pembatalan</b><span th:text="${tempat.pembatalan ?: '-'}">-</span></div></div>
+                    <div class="rule"><span class="ico-circle"><i class="bi bi-exclamation-triangle"></i></span><div><b>Denda keterlambatan</b><span th:text="${tempat.denda ?: '-'}">-</span></div></div>
+                </div>
+
+                <div class="card">
+                    <h2>Informasi pemilik</h2>
+                    <div class="owner">
+                        <span class="ico-circle"><i class="bi bi-person"></i></span>
+                        <div><b th:text="${tempat.pemilik.nama}">Pemilik</b><div class="small muted">Pemilik tempat</div></div>
+                    </div>
+                    <div class="notice" sec:authorize="isAuthenticated()">
+                        <i class="bi bi-info-circle"></i>
+                        <span th:if="${tempat.pemilik.noTelepon != null}" th:text="'Kontak pemilik: ' + ${tempat.pemilik.noTelepon}">Kontak</span>
+                        <span th:if="${tempat.pemilik.noTelepon == null}">Pemilik belum mencantumkan kontak.</span>
+                    </div>
+                    <div class="notice" sec:authorize="!isAuthenticated()"><i class="bi bi-info-circle"></i><span>Masuk untuk melihat kontak pemilik.</span></div>
+                </div>
+
+                <div class="card mint" id="ulasan">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <h2 style="margin: 0;">Ulasan penyewa</h2>
+                        <a class="btn btn-dark btn-sm" th:if="${bisaUlas}" th:href="@{/penyewa/ulasan/{id}(id=${tempat.idTempat})}">Tulis ulasan</a>
+                    </div>
+                    <div th:if="${tempat.jumlahUlasan > 0}" style="margin-top: 10px;">
+                        <div class="small" style="margin-bottom: 6px;">
+                            <span th:replace="~{fragments/layout :: stars(${tempat.rataRating})}"></span>
+                            <b th:text="${#numbers.formatDecimal(tempat.rataRating, 1, 1, 'COMMA')}">5,0</b>
+                            <span class="muted" th:text="'(' + ${tempat.jumlahUlasan} + ' ulasan)'">(1 ulasan)</span>
+                        </div>
+                        <div class="review" th:each="u : ${tempat.ulasanList}">
+                            <div style="display: flex; justify-content: space-between; gap: 8px;">
+                                <b th:text="${u.penyewa.nama}">Penyewa</b>
+                                <span th:replace="~{fragments/layout :: stars(${u.rating})}"></span>
+                            </div>
+                            <p style="margin: 4px 0 0;" th:if="${u.komentar != null}" th:text="${u.komentar}">Komentar</p>
+                        </div>
+                    </div>
+                    <p class="small muted" style="margin: 10px 0 0;" th:if="${tempat.jumlahUlasan == 0}">Belum ada ulasan. Ulasan muncul setelah penyewa menyelesaikan masa sewa.</p>
+                </div>
+            </div>
+
+            <aside>
+                <div class="card sticky" th:with="r=${tempat.rincian(1)}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h2 style="margin: 0;">Rincian biaya</h2>
+                    </div>
+                    <div th:replace="~{fragments/layout :: badge(${tempat.statusTampil.label}, ${tempat.statusTampil.css})}"></div>
+                    <div style="margin-top: 10px;">
+                        <div class="cost-row" th:each="b : ${r.baris}">
+                            <div class="nm">
+                                <span th:text="${b.jenis == 'LISTRIK'} ? 'Listrik' : (${b.jenis == 'AIR'} ? 'Air' : (${b.jenis == 'LAIN'} ? 'Biaya lainnya' : ${b.label}))">Label</span>
+                                <small th:if="${b.jenis == 'LAIN'}" th:text="${b.label}">Nama biaya</small>
+                                <small th:if="${b.jenis != 'LAIN' and b.catatan != null}" th:text="${b.catatan}">Catatan</small>
+                            </div>
+                            <div class="nl">
+                                <span th:if="${b.tanpaNominal}">Sesuai pemakaian</span>
+                                <span th:unless="${b.tanpaNominal}"
+                                      th:text="(${b.estimasi} ? 'Est. ' : '') + ${@fmt.rupiah(b.nominal)} + ' / ' + ${tempat.satuan().satuan}">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cost-total">
+                        <b>Estimasi total</b>
+                        <b th:text="${@fmt.rupiah(r.total)} + ' / ' + ${tempat.satuan().satuan}">Rp 0</b>
+                    </div>
+                    <p class="foot-note">Dasar perhitungan: <span th:text="${r.dasar}">harga pokok</span>.
+                        <span th:if="${r.listrikPemakaian}">Tagihan listrik mengikuti pemakaian sebenarnya.</span></p>
+
+                    <div th:if="${tempat.tersedia}">
+                        <div sec:authorize="!isAuthenticated() or hasRole('PENYEWA')">
+                            <a class="btn btn-dark btn-block" th:href="@{/penyewa/booking/{id}(id=${tempat.idTempat})}">Ajukan Booking</a>
+                            <p class="tiny muted center" style="margin: 10px 0 0;">Pengajuan belum mengikat. Pemilik akan mengonfirmasi lebih dulu.</p>
+                        </div>
+                        <p class="small muted" sec:authorize="hasAnyRole('PEMILIK','ADMIN')">Booking hanya dapat diajukan oleh akun penyewa.</p>
+                    </div>
+                    <div th:unless="${tempat.tersedia}">
+                        <button class="btn btn-dark btn-block" type="button" disabled>Tidak menerima booking</button>
+                    </div>
+
+                    <div style="margin-top: 16px;" th:if="${not #lists.isEmpty(periodeTerisi)}">
+                        <div class="lbl">Periode sudah terisi</div>
+                        <ul class="small muted" style="margin: 0; padding-left: 18px;">
+                            <li th:each="b : ${periodeTerisi}" th:text="${@fmt.periode(b.tanggalMulai, b.tanggalSelesai)}">1 – 5 Januari 2027</li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+</body>
+</html>

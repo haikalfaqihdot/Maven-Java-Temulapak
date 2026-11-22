@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Detail Pengajuan Booking', 'booking', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/pemilik/booking}">Booking Masuk</a><i class="bi bi-chevron-right"></i><b th:text="${booking.penyewa.nama}">Penyewa</b></nav>
+            <div class="row-end">
+                <h1>Detail Pengajuan Booking</h1>
+                <span th:replace="~{fragments/layout :: badge(${booking.statusBooking.label}, ${booking.statusBooking.name().toLowerCase()})}"></span>
+            </div>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap layout-2">
+            <div class="stack">
+                <div class="card">
+                    <h2>Penyewa</h2>
+                    <div class="owner" style="margin: 0;">
+                        <span class="ico-circle"><i class="bi bi-person"></i></span>
+                        <div>
+                            <b th:text="${booking.penyewa.nama}">Penyewa</b>
+                            <div class="small muted">
+                                <span th:text="${booking.penyewa.email}">email</span> ·
+                                <span th:text="${booking.statusBooking.name() == 'APPROVED' or booking.statusBooking.name() == 'COMPLETED'} ? ${booking.penyewa.noTelepon} : ${booking.penyewa.noTeleponSamar}">0812-xxxx-xxxx</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Tempat yang diajukan</h2>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <img th:src="@{${booking.tempat.fotoUtama}}" alt="" style="width: 110px; height: 76px; object-fit: cover; border-radius: 10px;">
+                        <div>
+                            <b style="font-size: 17px;" th:text="${booking.tempat.namaTempat}">Tempat</b>
+                            <div class="small muted" style="margin: 3px 0 6px;"><i class="bi bi-geo-alt"></i> <span th:text="${booking.tempat.lokasi}">Lokasi</span></div>
+                            <span class="small">Status tempat:</span>
+                            <span th:replace="~{fragments/layout :: badge(${booking.tempat.statusTampil.label}, ${booking.tempat.statusTampil.css})}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Periode sewa</h2>
+                    <div class="info-3">
+                        <div><div class="k">Tanggal mulai</div><div class="v" th:text="${@fmt.tanggal(booking.tanggalMulai)}">1 Desember 2026</div></div>
+                        <div><div class="k">Tanggal selesai</div><div class="v" th:text="${@fmt.tanggal(booking.tanggalSelesai)}">28 Februari 2027</div></div>
+                        <div><div class="k">Durasi</div><div class="v" th:text="${booking.durasiLabel}">3 bulan</div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Catatan penyewa</h2>
+                    <div style="background: var(--bg); border-radius: 10px; padding: 12px 14px;" th:text="${booking.catatan ?: 'Penyewa tidak menambahkan catatan.'}">Catatan</div>
+                </div>
+
+                <div class="card" th:with="r=${booking.rincian}">
+                    <h2>Ringkasan biaya</h2>
+                    <div class="cost-row" th:each="b : ${r.baris}">
+                        <div class="nm"><span th:text="${b.label}">Label</span><small th:text="${b.rumus}">rumus</small></div>
+                        <div class="nl" th:text="${b.tanpaNominal} ? 'Sesuai pemakaian' : ${@fmt.rupiah(b.nominal)}">Rp 0</div>
+                    </div>
+                    <div class="cost-total"><b>Estimasi total</b><b th:text="${@fmt.rupiah(r.total)}">Rp 0</b></div>
+                </div>
+            </div>
+
+            <aside>
+                <div class="card sticky">
+                    <h2>Keputusan</h2>
+                    <div th:if="${booking.statusBooking.name() == 'PENDING'}">
+                        <div class="lbl">Pemeriksaan ketersediaan</div>
+                        <div class="notice bad" th:if="${bentrok}"><i class="bi bi-exclamation-triangle"></i>
+                            <span th:text="'Periode ' + ${booking.periodeLabel} + ' bertabrakan dengan booking lain yang sudah dikonfirmasi.'">Bentrok</span></div>
+                        <div class="notice ok" th:unless="${bentrok}"><i class="bi bi-check2"></i>
+                            <span th:text="'Tidak ada booking aktif lain pada ' + ${booking.periodeLabel} + '.'">Tidak ada bentrok</span></div>
+                        <p class="small muted" style="margin: 12px 0 16px;">Sistem memeriksa ulang jadwal saat Anda menekan Konfirmasi, agar tidak ada dua booking aktif di tempat dan periode yang sama.</p>
+                        <form method="post" th:action="@{/pemilik/booking/{id}/setuju(id=${booking.idBooking})}" style="margin-bottom: 10px;">
+                            <button class="btn btn-dark btn-block" type="submit" th:disabled="${bentrok}">Konfirmasi Booking</button>
+                        </form>
+                        <form method="post" th:action="@{/pemilik/booking/{id}/tolak(id=${booking.idBooking})}" data-confirm="Tolak pengajuan ini?">
+                            <button class="btn btn-line btn-block" type="submit">Tolak Pengajuan</button>
+                        </form>
+                        <p class="tiny muted" style="margin: 12px 0 0;">Menolak mengembalikan tempat ke status Tersedia. Penyewa akan menerima pemberitahuan.</p>
+                    </div>
+                    <div th:if="${booking.statusBooking.name() == 'APPROVED'}">
+                        <div class="notice ok"><i class="bi bi-check2"></i><span>Booking ini sudah dikonfirmasi.</span></div>
+                        <form method="post" th:action="@{/pemilik/booking/{id}/selesai(id=${booking.idBooking})}" data-confirm="Tandai masa sewa ini sudah selesai?" style="margin-top: 14px;">
+                            <button class="btn btn-dark btn-block" type="submit">Tandai Selesai</button>
+                        </form>
+                        <p class="tiny muted" style="margin: 12px 0 0;">Setelah selesai, penyewa dapat memberi ulasan untuk tempat ini.</p>
+                    </div>
+                    <p class="muted" style="margin: 0;" th:if="${booking.statusBooking.name() != 'PENDING' and booking.statusBooking.name() != 'APPROVED'}">
+                        Pengajuan ini sudah <span th:text="${#strings.toLowerCase(booking.statusBooking.label)}">selesai</span>.</p>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell((${tempat == null} ? 'Tambah Tempat' : 'Edit Tempat'), 'tempat', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/pemilik/tempat}">Tempat Saya</a><i class="bi bi-chevron-right"></i><b th:text="${tempat == null} ? 'Tambah Tempat' : 'Edit Tempat'">Tambah Tempat</b></nav>
+            <h1 th:text="${tempat == null} ? 'Tambah Tempat' : 'Edit Tempat'">Tambah Tempat</h1>
+            <p class="sub">Lengkapi semua bagian bertanda *. Form yang sama dipakai untuk Edit dan Perbaiki Listing. Listing belum tayang sampai disetujui admin.</p>
+        </div>
+    </section>
+
+    <section class="page-body">
+        <div class="wrap">
+            <form th:action="${tempat == null} ? @{/pemilik/tempat(_csrf=${_csrf.token})} : @{/pemilik/tempat/{id}(id=${tempat.idTempat}, _csrf=${_csrf.token})}"
+                  th:object="${form}" method="post" enctype="multipart/form-data" novalidate>
+                <div class="alert-flash bad" role="alert" th:if="${#fields.hasErrors('*')}">Beberapa isian belum benar. Periksa bagian yang bertanda merah.</div>
+                <div class="form-layout">
+                    <aside class="card stepper" style="padding: 16px;">
+                        <h3>Bagian form</h3>
+                        <a href="#bagian-1" class="on"><b>1</b>Informasi tempat</a>
+                        <a href="#bagian-2"><b>2</b>Foto dan fasilitas</a>
+                        <a href="#bagian-3"><b>3</b>Harga dan biaya</a>
+                        <a href="#bagian-4"><b>4</b>Aturan sewa</a>
+                        <a href="#bagian-5"><b>5</b>Ringkasan</a>
+                    </aside>
+
+                    <div>
+                        <!-- 1 -->
+                        <div class="card form-card" id="bagian-1">
+                            <h2>1. Informasi tempat</h2>
+                            <div class="field">
+                                <label for="namaTempat">Nama tempat *</label>
+                                <input class="input" id="namaTempat" type="text" th:field="*{namaTempat}" th:errorclass="invalid" placeholder="Kios Depan Pasar Pondok Labu">
+                                <div class="hint">Nama singkat yang mudah diingat</div>
+                                <div class="err" th:if="${#fields.hasErrors('namaTempat')}" th:errors="*{namaTempat}"></div>
+                            </div>
+                            <div class="field">
+                                <span class="lbl">Jenis tempat *</span>
+                                <div class="pills">
+                                    <label class="pill" th:each="j : ${daftarJenis}">
+                                        <input type="radio" name="jenisTempat" th:value="${j}" th:checked="${j == form.jenisTempat}"><span th:text="${j}">Kios</span>
+                                    </label>
+                                </div>
+                                <div class="err" th:if="${#fields.hasErrors('jenisTempat')}" th:errors="*{jenisTempat}"></div>
+                            </div>
+                            <div class="grid-2">
+                                <div class="field">
+                                    <label for="lokasi">Lokasi (kawasan atau kota) *</label>
+                                    <input class="input" id="lokasi" type="text" th:field="*{lokasi}" th:errorclass="invalid" placeholder="Pondok Labu, Jakarta Selatan">
+                                    <div class="hint">Dipakai untuk pencarian</div>
+                                    <div class="err" th:if="${#fields.hasErrors('lokasi')}" th:errors="*{lokasi}"></div>
+                                </div>
+                                <div class="field">
+                                    <label for="ukuran">Ukuran (opsional)</label>
+                                    <input class="input" id="ukuran" type="text" th:field="*{ukuran}" placeholder="3 × 4 m">
+                                    <div class="hint">Isi bila diketahui</div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="alamatLengkap">Alamat lengkap *</label>
+                                <input class="input" id="alamatLengkap" type="text" th:field="*{alamatLengkap}" th:errorclass="invalid" placeholder="Jl. Contoh No. 12, Pondok Labu">
+                                <div class="hint">Alamat jelas membantu penyewa menemukan tempat</div>
+                                <div class="err" th:if="${#fields.hasErrors('alamatLengkap')}" th:errors="*{alamatLengkap}"></div>
+                            </div>
+                            <div class="field">
+                                <label for="kondisi">Kondisi tempat *</label>
+                                <textarea class="textarea" id="kondisi" th:field="*{kondisi}" th:errorclass="invalid" placeholder="Contoh: lantai keramik, atap tidak bocor, dinding baru dicat."></textarea>
+                                <div class="hint">Ceritakan kondisi apa adanya, termasuk kekurangan bila ada.</div>
+                                <div class="err" th:if="${#fields.hasErrors('kondisi')}" th:errors="*{kondisi}"></div>
+                            </div>
+                            <div class="field">
+                                <label for="deskripsi">Deskripsi (opsional)</label>
+                                <textarea class="textarea" id="deskripsi" th:field="*{deskripsi}" placeholder="Ceritakan keunggulan lokasi dan jenis usaha yang cocok."></textarea>
+                            </div>
+                            <div class="field" th:if="${tempat != null}" style="margin-bottom: 0;">
+                                <span class="lbl">Ketersediaan</span>
+                                <div class="pills">
+                                    <label class="pill"><input type="radio" name="statusTempat" value="AVAILABLE" th:checked="${form.statusTempat == null or form.statusTempat.name() == 'AVAILABLE'}"><span>Menerima booking</span></label>
+                                    <label class="pill"><input type="radio" name="statusTempat" value="UNAVAILABLE" th:checked="${form.statusTempat != null and form.statusTempat.name() == 'UNAVAILABLE'}"><span>Terisi (tidak menerima booking)</span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2 -->
+                        <div class="card form-card" id="bagian-2">
+                            <h2>2. Foto dan fasilitas</h2>
+                            <div class="dropzone">
+                                <i class="bi bi-upload" style="font-size: 22px;"></i>
+                                <div class="t">Unggah foto tempat</div>
+                                <div class="s">Format JPG atau PNG. Tambahkan minimal 1 foto.</div>
+                                <label class="btn btn-line btn-sm" for="foto" style="background: #fff;">Pilih Foto</label>
+                                <input id="foto" type="file" name="foto" multiple accept="image/jpeg,image/png">
+                            </div>
+                            <div class="preview-grid" id="pratinjauBaru"></div>
+                            <div class="preview-grid" th:if="${tempat != null and not #lists.isEmpty(tempat.fotoList)}">
+                                <figure th:each="f : ${tempat.fotoList}">
+                                    <img th:src="@{${f.urlFoto}}" alt="Foto tempat">
+                                    <label><input type="checkbox" name="hapusFotoIds" th:value="${f.idFoto}"> Hapus foto ini</label>
+                                </figure>
+                            </div>
+                            <span class="lbl">Fasilitas</span>
+                            <div class="pills">
+                                <label class="pill" th:each="f : ${fasilitasList}">
+                                    <input type="checkbox" name="fasilitasIds" th:value="${f.idFasilitas}" th:checked="${form.fasilitasIds.contains(f.idFasilitas)}"><span th:text="${f.namaFasilitas}">Listrik</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3 -->
+                        <div class="card form-card" id="bagian-3">
+                            <h2>3. Harga dan biaya</h2>
+                            <p class="lead">Biaya yang dihitung dari pemakaian wajib menjelaskan tarif atau dasar perhitungannya.</p>
+                            <div class="grid-2">
+                                <div class="field">
+                                    <label for="hargaSewa">Harga sewa pokok *</label>
+                                    <div class="prefix"><span>Rp</span><input class="input" id="hargaSewa" type="number" min="0" step="any" name="hargaSewa" th:value="${form.hargaSewa}" placeholder="1800000"></div>
+                                    <div class="hint">Harus lebih dari 0</div>
+                                    <div class="err" th:if="${#fields.hasErrors('hargaSewa')}" th:errors="*{hargaSewa}"></div>
+                                </div>
+                                <div class="field">
+                                    <span class="lbl">Satuan periode *</span>
+                                    <div class="pills">
+                                        <label class="pill"><input type="radio" name="satuanPeriode" value="HARI" th:checked="${form.satuanPeriode.name() == 'HARI'}"><span>Per hari</span></label>
+                                        <label class="pill"><input type="radio" name="satuanPeriode" value="MINGGU" th:checked="${form.satuanPeriode.name() == 'MINGGU'}"><span>Per minggu</span></label>
+                                        <label class="pill"><input type="radio" name="satuanPeriode" value="BULAN" th:checked="${form.satuanPeriode.name() == 'BULAN'}"><span>Per bulan</span></label>
+                                    </div>
+                                    <div class="hint">Harga di atas berlaku per satuan ini.</div>
+                                </div>
+                            </div>
+
+                            <div class="sub-box">
+                                <div class="lbl">Listrik</div>
+                                <div class="pills" style="margin-bottom: 12px;">
+                                    <label class="pill" th:each="m : ${daftarModeBiaya}">
+                                        <input type="radio" name="listrikMode" th:value="${m.name()}" th:checked="${form.listrikMode == m}"><span th:text="${m.label}">Mode</span>
+                                    </label>
+                                </div>
+                                <div class="field" data-group="listrikMode" data-show-for="TETAP">
+                                    <label for="listrikBiayaTetap">Biaya listrik per periode</label>
+                                    <div class="prefix"><span>Rp</span><input class="input" id="listrikBiayaTetap" type="number" min="0" step="any" name="listrikBiayaTetap" th:value="${form.listrikBiayaTetap}" placeholder="150000"></div>
+                                </div>
+                                <div class="grid-2" data-group="listrikMode" data-show-for="PEMAKAIAN">
+                                    <div class="field">
+                                        <label for="listrikTarifKwh">Tarif per kWh</label>
+                                        <div class="prefix"><span>Rp</span><input class="input" id="listrikTarifKwh" type="number" min="0" step="any" name="listrikTarifKwh" th:value="${form.listrikTarifKwh}" placeholder="1500"></div>
+                                        <div class="hint">Dasar perhitungan</div>
+                                    </div>
+                                    <div class="field">
+                                        <label for="listrikEstimasiKwh">Perkiraan pemakaian (opsional)</label>
+                                        <input class="input" id="listrikEstimasiKwh" type="number" min="0" name="listrikEstimasiKwh" th:value="${form.listrikEstimasiKwh}" placeholder="100 kWh">
+                                        <div class="hint">Untuk estimasi biaya</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="sub-box">
+                                <div class="lbl">Air</div>
+                                <div class="pills" style="margin-bottom: 12px;">
+                                    <label class="pill" th:each="m : ${daftarModeBiaya}">
+                                        <input type="radio" name="airMode" th:value="${m.name()}" th:checked="${form.airMode == m}"><span th:text="${m.label}">Mode</span>
+                                    </label>
+                                </div>
+                                <div class="field" data-group="airMode" data-show-for="TETAP,PEMAKAIAN" style="margin-bottom: 0;">
+                                    <label for="airBiaya">Biaya air per periode</label>
+                                    <div class="prefix"><span>Rp</span><input class="input" id="airBiaya" type="number" min="0" step="any" name="airBiaya" th:value="${form.airBiaya}" placeholder="75000"></div>
+                                    <div class="hint">Biaya tetap atau perkiraan per periode sewa</div>
+                                </div>
+                            </div>
+
+                            <div class="sub-box">
+                                <div class="lbl">Biaya lainnya</div>
+                                <div id="daftarBiaya">
+                                    <div class="biaya-row" th:each="n, st : ${form.biayaLainNama}">
+                                        <div class="field"><label>Nama biaya</label>
+                                            <input class="input" type="text" name="biayaLainNama" th:value="${n}" placeholder="Iuran kebersihan"></div>
+                                        <div class="field"><label>Nominal per periode</label>
+                                            <div class="prefix"><span>Rp</span><input class="input" type="number" min="0" step="any" name="biayaLainNominal"
+                                                th:value="${form.biayaLainNominal.size() > st.index} ? ${form.biayaLainNominal[st.index]} : ''" placeholder="50000"></div></div>
+                                    </div>
+                                    <div class="biaya-row" th:if="${#lists.isEmpty(form.biayaLainNama)}">
+                                        <div class="field"><label>Nama biaya</label>
+                                            <input class="input" type="text" name="biayaLainNama" placeholder="Iuran kebersihan"></div>
+                                        <div class="field"><label>Nominal per periode</label>
+                                            <div class="prefix"><span>Rp</span><input class="input" type="number" min="0" step="any" name="biayaLainNominal" placeholder="50000"></div></div>
+                                    </div>
+                                </div>
+                                <div class="hint" style="margin: -4px 0 10px;">Contoh: iuran keamanan. Isi 0 bila tidak ada.</div>
+                                <button class="btn btn-link btn-sm" type="button" id="tambahBiaya"><i class="bi bi-plus-lg"></i> Tambah biaya lain</button>
+                            </div>
+                        </div>
+
+                        <!-- 4 -->
+                        <div class="card form-card" id="bagian-4">
+                            <h2>4. Aturan sewa</h2>
+                            <p class="lead">Aturan ini tampil di halaman detail sebelum penyewa mengajukan booking.</p>
+                            <div class="grid-2">
+                                <div class="field">
+                                    <label for="durasiMinimal">Durasi minimal *</label>
+                                    <input class="input" id="durasiMinimal" type="text" th:field="*{durasiMinimal}" th:errorclass="invalid" placeholder="3 bulan">
+                                    <div class="hint">Contoh: 3 bulan atau 1 hari</div>
+                                    <div class="err" th:if="${#fields.hasErrors('durasiMinimal')}" th:errors="*{durasiMinimal}"></div>
+                                </div>
+                                <div class="field">
+                                    <label for="perpanjangan">Perpanjangan *</label>
+                                    <input class="input" id="perpanjangan" type="text" th:field="*{perpanjangan}" th:errorclass="invalid" placeholder="14 hari sebelum berakhir">
+                                    <div class="hint">Kapan dan bagaimana perpanjangan diajukan</div>
+                                    <div class="err" th:if="${#fields.hasErrors('perpanjangan')}" th:errors="*{perpanjangan}"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="pembayaran">Pembayaran *</label>
+                                <textarea class="textarea" id="pembayaran" th:field="*{pembayaran}" th:errorclass="invalid" placeholder="Contoh: dibayar langsung kepada pemilik, di awal masa sewa."></textarea>
+                                <div class="hint">Jelaskan jadwal dan caranya. Pembayaran tidak diproses di TemuLapak.</div>
+                                <div class="err" th:if="${#fields.hasErrors('pembayaran')}" th:errors="*{pembayaran}"></div>
+                            </div>
+                            <div class="field">
+                                <label for="pembatalan">Pembatalan *</label>
+                                <textarea class="textarea" id="pembatalan" th:field="*{pembatalan}" th:errorclass="invalid" placeholder="Contoh: pengajuan yang belum dikonfirmasi bisa dibatalkan tanpa biaya."></textarea>
+                                <div class="hint">Ketentuan pembatalan yang berlaku.</div>
+                                <div class="err" th:if="${#fields.hasErrors('pembatalan')}" th:errors="*{pembatalan}"></div>
+                            </div>
+                            <div class="field" style="margin-bottom: 0;">
+                                <label for="denda">Denda keterlambatan *</label>
+                                <textarea class="textarea" id="denda" th:field="*{denda}" th:errorclass="invalid" placeholder="Contoh: 1% dari harga sewa per hari keterlambatan."></textarea>
+                                <div class="hint">Tulis nominal atau persentase yang jelas.</div>
+                                <div class="err" th:if="${#fields.hasErrors('denda')}" th:errors="*{denda}"></div>
+                            </div>
+                        </div>
+
+                        <!-- 5 -->
+                        <div class="card form-card" id="bagian-5">
+                            <h2>5. Ringkasan sebelum dikirim</h2>
+                            <ul class="check-list">
+                                <li><i class="bi bi-check2"></i>Informasi tempat lengkap (nama, jenis, lokasi, alamat, kondisi)</li>
+                                <li><i class="bi bi-check2"></i>Minimal 1 foto JPG atau PNG</li>
+                                <li><i class="bi bi-check2"></i>Harga pokok lebih dari 0 dan satuan periode dipilih</li>
+                                <li><i class="bi bi-check2"></i>Biaya listrik, air, dan lainnya sudah dijelaskan</li>
+                                <li><i class="bi bi-check2"></i>Aturan sewa lengkap: durasi, perpanjangan, pembayaran, pembatalan, denda</li>
+                            </ul>
+                            <div class="notice" style="margin-bottom: 16px;">
+                                <b>Status setelah dikirim</b>
+                                <span th:replace="~{fragments/layout :: badge('Menunggu verifikasi', 'pending')}"></span>
+                                <span>Listing belum tayang sampai disetujui admin.</span>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-dark" type="submit">Kirim untuk Verifikasi</button>
+                                <a class="btn btn-link" th:href="@{/pemilik/tempat}">Batal</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form method="post" th:if="${tempat != null}" th:action="@{/pemilik/tempat/{id}/hapus(id=${tempat.idTempat})}"
+                  data-confirm="Hapus tempat ini beserta foto dan riwayat bookingnya? Tindakan ini tidak dapat dibatalkan."
+                  style="margin-top: 4px;">
+                <button class="btn btn-danger-line btn-sm" type="submit"><i class="bi bi-trash"></i> Hapus tempat ini</button>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

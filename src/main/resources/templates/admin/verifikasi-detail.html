@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Periksa Listing', 'verifikasi', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/admin/verifikasi}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/admin/verifikasi}">Antrean Verifikasi</a><i class="bi bi-chevron-right"></i><b th:text="${tempat.namaTempat}">Listing</b></nav>
+            <div class="row-end">
+                <h1>Periksa Listing</h1>
+                <span th:replace="~{fragments/layout :: badge(${tempat.statusVerifikasi.label}, ${tempat.statusVerifikasi.name().toLowerCase()})}"></span>
+            </div>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap layout-2">
+            <div class="stack">
+                <div class="card">
+                    <h2>Data pemilik</h2>
+                    <div class="owner" style="margin: 0;">
+                        <span class="ico-circle"><i class="bi bi-person"></i></span>
+                        <div><b th:text="${tempat.pemilik.nama}">Pemilik</b>
+                            <div class="small muted"><span th:text="${tempat.pemilik.email}">email</span> · <span th:text="${tempat.pemilik.noTelepon ?: '-'}">telepon</span></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Foto</h2>
+                    <div class="gallery-thumbs" th:if="${not #lists.isEmpty(tempat.fotoList)}" style="margin-top: 0;">
+                        <img th:each="f : ${tempat.fotoList}" th:src="@{${f.urlFoto}}" alt="Foto tempat" style="cursor: default;">
+                    </div>
+                    <p class="muted" style="margin: 0;" th:if="${#lists.isEmpty(tempat.fotoList)}">Pemilik belum mengunggah foto.</p>
+                </div>
+
+                <div class="card">
+                    <h2>Informasi tempat</h2>
+                    <div class="kv"><span class="k">Nama</span><span class="v" th:text="${tempat.namaTempat}">-</span></div>
+                    <div class="kv"><span class="k">Jenis</span><span class="v" th:text="${tempat.jenisTempat}">-</span></div>
+                    <div class="kv"><span class="k">Lokasi</span><span class="v" th:text="${tempat.lokasi}">-</span></div>
+                    <div class="kv"><span class="k">Alamat</span><span class="v" th:text="${tempat.alamatLengkap ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Ukuran</span><span class="v" th:text="${tempat.ukuran ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Kondisi</span><span class="v" th:text="${tempat.kondisi ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Fasilitas</span>
+                        <span class="v" th:text="${#sets.isEmpty(tempat.fasilitas)} ? '-' : ${#strings.listJoin(#lists.sort(tempat.fasilitas.![namaFasilitas]), ', ')}">-</span></div>
+                </div>
+
+                <div class="card" th:with="r=${tempat.rincian(1)}">
+                    <h2>Harga dan biaya tambahan</h2>
+                    <div class="kv"><span class="k">Harga sewa pokok</span><span class="v" th:text="${@fmt.rupiah(tempat.hargaSewa)} + ' / ' + ${tempat.satuan().satuan}">-</span></div>
+                    <div class="kv"><span class="k">Listrik</span><span class="v" th:text="${tempat.modeListrik().label} + (${tempat.listrikTarifKwh != null} ? ', ' + ${@fmt.rupiah(tempat.listrikTarifKwh)} + ' / kWh' : '') + (${tempat.listrikBiayaTetap != null} ? ', ' + ${@fmt.rupiah(tempat.listrikBiayaTetap)} : '')">-</span></div>
+                    <div class="kv"><span class="k">Air</span><span class="v" th:text="${tempat.modeAir().label} + (${tempat.airBiaya != null} ? ', ' + ${@fmt.rupiah(tempat.airBiaya)} + ' / ' + ${tempat.satuan().satuan} : '')">-</span></div>
+                    <div class="kv" th:each="b : ${tempat.daftarBiayaLain}"><span class="k">Biaya lainnya</span><span class="v" th:text="${b.nama} + ' ' + ${@fmt.rupiah(b.nominal)} + ' / ' + ${tempat.satuan().satuan}">-</span></div>
+                </div>
+
+                <div class="card">
+                    <h2>Aturan sewa</h2>
+                    <div class="kv"><span class="k">Durasi minimal</span><span class="v" th:text="${tempat.durasiMinimal ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Perpanjangan</span><span class="v" th:text="${tempat.perpanjangan ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Pembayaran</span><span class="v" th:text="${tempat.pembayaran ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Pembatalan</span><span class="v" th:text="${tempat.pembatalan ?: '-'}">-</span></div>
+                    <div class="kv"><span class="k">Denda keterlambatan</span><span class="v" th:text="${tempat.denda ?: '-'}">-</span></div>
+                </div>
+            </div>
+
+            <aside>
+                <div class="card sticky">
+                    <h2>Checklist kelengkapan</h2>
+                    <ul class="check-list" style="margin-top: 0;">
+                        <li th:each="c : ${pemeriksaan.cek}">
+                            <i class="bi" th:classappend="${c.ok} ? 'bi-check2' : 'bi-x-lg'" th:style="${c.ok} ? '' : 'color: var(--red);'"></i>
+                            <span th:text="${c.label}" th:style="${c.ok} ? '' : 'color: var(--red);'">Item</span>
+                        </li>
+                    </ul>
+                    <hr style="border: 0; border-top: 1px solid var(--line); margin: 0 0 14px;">
+                    <div class="notice bad" th:if="${tempat.catatanAdmin != null}" style="margin-bottom: 12px;"><i class="bi bi-exclamation-triangle"></i>
+                        <span>Catatan sebelumnya: <span th:text="${tempat.catatanAdmin}">Catatan</span></span></div>
+
+                    <form method="post" th:action="@{/admin/verifikasi/{id}/tolak(id=${tempat.idTempat})}" id="formTolak"></form>
+                    <div class="field">
+                        <label for="catatan">Catatan admin</label>
+                        <textarea class="textarea" id="catatan" name="catatan" form="formTolak" placeholder="Wajib diisi bila listing ditolak. Tulis bagian yang perlu diperbaiki."></textarea>
+                        <div class="hint">Catatan dikirim ke pemilik.</div>
+                    </div>
+                    <form method="post" th:action="@{/admin/verifikasi/{id}/setuju(id=${tempat.idTempat})}" style="margin-bottom: 10px;">
+                        <button class="btn btn-dark btn-block" type="submit" th:disabled="${!pemeriksaan.lengkap}">Setujui Listing</button>
+                    </form>
+                    <button class="btn btn-line btn-block" type="submit" form="formTolak">Tolak Listing</button>
+                    <p class="tiny muted" style="margin: 12px 0 0;">Listing yang disetujui tampil di pencarian. Listing dengan data rusak hanya bisa ditolak.</p>
+                </div>
+            </aside>
+        </div>
+    </section>
+</main>
+</body>
+</html>

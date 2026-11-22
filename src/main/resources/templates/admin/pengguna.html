@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Pengguna', 'pengguna', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/admin/verifikasi}">Beranda</a><i class="bi bi-chevron-right"></i><b>Pengguna</b></nav>
+            <h1>Pengguna</h1>
+            <p class="sub">Akun pemilik tempat dan penyewa yang terdaftar.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">Pemilik tempat <span class="muted" th:text="'(' + ${#lists.size(pemilikList)} + ')'">(0)</span></h2>
+            <div class="table-card" style="margin-bottom: 26px;"><div class="table-wrap">
+                <table class="tbl"><thead><tr><th>Nama</th><th>Email</th><th>Telepon</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${pemilikList}"><td><b th:text="${p.nama}">Nama</b></td><td th:text="${p.email}">Email</td><td th:text="${p.noTelepon ?: '-'}">-</td></tr>
+                    <tr th:if="${#lists.isEmpty(pemilikList)}"><td colspan="3" class="muted">Belum ada pemilik.</td></tr>
+                    </tbody></table></div></div>
+            <h2 style="font-size: 18px; margin-bottom: 10px;">Penyewa <span class="muted" th:text="'(' + ${#lists.size(penyewaList)} + ')'">(0)</span></h2>
+            <div class="table-card"><div class="table-wrap">
+                <table class="tbl"><thead><tr><th>Nama</th><th>Email</th><th>Telepon</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${penyewaList}"><td><b th:text="${p.nama}">Nama</b></td><td th:text="${p.email}">Email</td><td th:text="${p.noTelepon ?: '-'}">-</td></tr>
+                    <tr th:if="${#lists.isEmpty(penyewaList)}"><td colspan="3" class="muted">Belum ada penyewa.</td></tr>
+                    </tbody></table></div></div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

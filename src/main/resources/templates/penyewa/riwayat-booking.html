@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Booking Saya', 'booking', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><b>Booking Saya</b></nav>
+            <h1>Booking Saya</h1>
+            <p class="sub">Pantau pengajuan aktif Anda. Riwayat lengkap tersedia di tahap berikutnya.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <div class="row-card" th:each="b : ${daftar}">
+                <img class="thumb" th:src="@{${b.tempat.fotoUtama}}" alt="">
+                <div>
+                    <div class="head">
+                        <span class="kind" th:text="${b.tempat.jenisTempat}">KIOS</span>
+                        <span th:replace="~{fragments/layout :: badge(${b.statusBooking.label}, ${b.statusBooking.name().toLowerCase()})}"></span>
+                    </div>
+                    <h3 th:text="${b.tempat.namaTempat}">Tempat</h3>
+                    <div class="line"><i class="bi bi-geo-alt"></i><span th:text="${b.tempat.lokasi}">Lokasi</span></div>
+                    <div class="line"><i class="bi bi-calendar3"></i><span th:text="${b.periodeLabel} + ' (' + ${b.durasiLabel} + ')'">Periode</span></div>
+                    <div class="line strong"><i class="bi bi-credit-card"></i>Estimasi total <span th:text="${@fmt.rupiah(b.estimasiTotal)}">Rp 0</span></div>
+                    <div class="tiny muted" th:switch="${b.statusBooking.name()}">
+                        <span th:case="'PENDING'">Bisa dibatalkan selama masih menunggu konfirmasi.</span>
+                        <span th:case="'APPROVED'">Pembatalan setelah dikonfirmasi: ketentuan belum ditetapkan.</span>
+                        <span th:case="'REJECTED'">Pemilik menolak pengajuan. Tempat kembali tersedia.</span>
+                        <span th:case="'CANCELLED'">Pengajuan ini sudah dibatalkan.</span>
+                        <span th:case="*">Masa sewa selesai.</span>
+                    </div>
+                </div>
+                <div class="acts">
+                    <a class="btn btn-line" th:href="@{/tempat/{id}(id=${b.tempat.idTempat})}">Lihat Detail</a>
+                    <form method="post" th:action="@{/penyewa/booking/{id}/batal(id=${b.idBooking})}" th:if="${b.statusBooking.name() == 'PENDING'}"
+                          data-confirm="Batalkan pengajuan ini?">
+                        <button class="btn btn-line btn-block" type="submit">Batalkan Pengajuan</button>
+                    </form>
+                    <a class="btn btn-dark" th:if="${bisaUlas.contains(b.tempat.idTempat)}" th:href="@{/penyewa/ulasan/{id}(id=${b.tempat.idTempat})}">Beri Ulasan</a>
+                    <a class="btn btn-link" th:if="${b.statusBooking.name() == 'REJECTED' or b.statusBooking.name() == 'CANCELLED'}" th:href="@{/tempat}">Cari Lapak Lain</a>
+                </div>
+            </div>
+
+            <div class="card empty" th:if="${#lists.isEmpty(daftar)}">
+                <p>Belum ada booking.</p>
+                <a class="btn btn-dark" th:href="@{/tempat}">Cari Lapak</a>
+            </div>
+            <div class="center" style="margin-top: 20px;" th:unless="${#lists.isEmpty(daftar)}">
+                <a class="btn btn-line" th:href="@{/tempat}">Cari Lapak Lain</a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Pengajuan tersimpan', 'booking', ~{::main})}">
+<body>
+<main class="page-body">
+    <div class="wrap" style="max-width: 640px;">
+        <div class="center" style="margin-bottom: 22px;">
+            <span class="ico-circle" style="width: 56px; height: 56px; font-size: 26px; background: var(--green-bg); color: var(--green);"><i class="bi bi-check2"></i></span>
+            <h1 style="font-size: 32px; margin: 14px 0 8px;">Pengajuan Anda tersimpan</h1>
+            <p class="muted" style="margin: 0;">Pemilik tempat sudah diberi tahu dan akan mengonfirmasi pengajuan Anda. Kami akan memberi tahu Anda setelah ada keputusan.</p>
+        </div>
+        <div class="card">
+            <h2>Ringkasan pengajuan</h2>
+            <div class="kv"><span class="k">Tempat</span><span class="v" th:text="${booking.tempat.namaTempat}">Tempat</span></div>
+            <div class="kv"><span class="k">Periode</span><span class="v" th:text="${booking.periodeLabel}">Periode</span></div>
+            <div class="kv"><span class="k">Estimasi total</span><span class="v" th:text="${@fmt.rupiah(booking.estimasiTotal)}">Rp 0</span></div>
+            <div class="kv"><span class="k">Status booking</span>
+                <span th:replace="~{fragments/layout :: badge(${booking.statusBooking.label}, ${booking.statusBooking.name().toLowerCase()})}"></span></div>
+            <div class="kv"><span class="k">Status tempat</span>
+                <span th:replace="~{fragments/layout :: badge(${booking.tempat.statusTampil.label}, ${booking.tempat.statusTampil.css})}"></span></div>
+            <div class="notice" style="margin-top: 14px;"><i class="bi bi-info-circle"></i>
+                <span>Belum ada pembayaran. Pembayaran tidak diproses di TemuLapak. Anda masih bisa membatalkan selama menunggu konfirmasi.</span></div>
+        </div>
+        <div class="center" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a class="btn btn-dark" th:href="@{/penyewa/riwayat-booking}">Lihat Booking Saya</a>
+            <a class="btn btn-line" th:href="@{/tempat}">Cari Lapak Lain</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

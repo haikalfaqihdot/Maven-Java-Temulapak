@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Booking Masuk', 'booking', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><b>Booking Masuk</b></nav>
+            <h1>Booking Masuk</h1>
+            <p class="sub">Pengajuan dari calon penyewa. Periksa detailnya, lalu konfirmasi atau tolak.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <div class="filter-row">
+                <span>Tampilkan:</span>
+                <a class="pill-link" th:classappend="${filter == null} ? 'on'" th:href="@{/pemilik/booking}"><i class="bi bi-check2" th:if="${filter == null}"></i>Semua</a>
+                <a class="pill-link" th:each="s : ${semuaStatus}" th:classappend="${filter == s} ? 'on'" th:href="@{/pemilik/booking(status=${s.name()})}">
+                    <i class="bi bi-check2" th:if="${filter == s}"></i><span th:text="${s.label}">Status</span></a>
+            </div>
+
+            <div class="table-card" th:if="${not #lists.isEmpty(daftar)}">
+                <div class="table-wrap">
+                    <table class="tbl">
+                        <thead><tr><th>Penyewa</th><th>Tempat</th><th>Periode</th><th>Estimasi total</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                        <tr th:each="b : ${daftar}">
+                            <td><b th:text="${b.penyewa.nama}">Penyewa</b><span class="sm" th:text="${b.penyewa.noTeleponSamar}">0812-xxxx-xxxx</span></td>
+                            <td><b th:text="${b.tempat.namaTempat}">Tempat</b><span class="sm" th:text="${b.tempat.jenisTempat} + ' · ' + ${b.tempat.areaSingkat}">Kios · Pondok Labu</span></td>
+                            <td><b th:text="${@fmt.periodeSingkat(b.tanggalMulai, b.tanggalSelesai)}">Periode</b><span class="sm" th:text="${b.durasiLabel}">3 bulan</span></td>
+                            <td th:text="${@fmt.rupiah(b.estimasiTotal)}">Rp 0</td>
+                            <td><span th:replace="~{fragments/layout :: badge(${b.statusBooking.label}, ${b.statusBooking.name().toLowerCase()})}"></span></td>
+                            <td><a class="btn btn-line btn-sm" th:href="@{/pemilik/booking/{id}(id=${b.idBooking})}">Lihat Detail</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card empty" th:if="${#lists.isEmpty(daftar)}">Tidak ada booking pada filter ini.</div>
+
+            <div class="notice" style="margin-top: 16px;"><i class="bi bi-info-circle"></i>
+                <span>Ketersediaan diperiksa ulang saat Anda menekan Konfirmasi agar tidak terjadi double-booking.</span></div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

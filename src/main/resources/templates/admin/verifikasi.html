@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Antrean Verifikasi', 'verifikasi', ~{::main})}">
+<body>
+<main>
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi"><a th:href="@{/admin/verifikasi}">Beranda</a><i class="bi bi-chevron-right"></i><b>Antrean Verifikasi</b></nav>
+            <h1>Antrean Verifikasi</h1>
+            <p class="sub">Periksa listing baru atau hasil edit sebelum tayang di pencarian.</p>
+        </div>
+    </section>
+    <section class="page-body">
+        <div class="wrap">
+            <div class="filter-row">
+                <span>Tampilkan:</span>
+                <a class="pill-link" th:classappend="${filter.name() == 'PENDING'} ? 'on'" th:href="@{/admin/verifikasi(status='PENDING')}"><i class="bi bi-check2" th:if="${filter.name() == 'PENDING'}"></i>Menunggu verifikasi</a>
+                <a class="pill-link" th:classappend="${filter.name() == 'APPROVED'} ? 'on'" th:href="@{/admin/verifikasi(status='APPROVED')}"><i class="bi bi-check2" th:if="${filter.name() == 'APPROVED'}"></i>Disetujui</a>
+                <a class="pill-link" th:classappend="${filter.name() == 'REJECTED'} ? 'on'" th:href="@{/admin/verifikasi(status='REJECTED')}"><i class="bi bi-check2" th:if="${filter.name() == 'REJECTED'}"></i>Ditolak</a>
+            </div>
+
+            <div class="table-card" th:if="${not #lists.isEmpty(daftar)}">
+                <div class="table-wrap">
+                    <table class="tbl">
+                        <thead><tr><th>Listing</th><th>Pemilik</th><th>Jenis</th><th>Diajukan</th><th>Pemeriksaan</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                        <tr th:each="t : ${daftar}" th:with="p=${periksa.get(t.idTempat)}">
+                            <td><b th:text="${t.namaTempat}">Listing</b><span class="sm" th:text="${t.lokasi}">Lokasi</span></td>
+                            <td th:text="${t.pemilik.nama}">Pemilik</td>
+                            <td th:text="${t.jenisTempat}">Kios</td>
+                            <td th:text="${t.diajukanPada != null} ? ${@fmt.tanggalSingkat(t.diajukanPada)} : '-'">27 Okt 2026</td>
+                            <td>
+                                <span th:if="${p.lengkap}">Data lengkap</span>
+                                <span th:unless="${p.lengkap}" style="color: var(--red);"><i class="bi bi-exclamation-triangle"></i> <span th:text="${p.ringkas}">Data rusak</span></span>
+                            </td>
+                            <td><span th:replace="~{fragments/layout :: badge(${t.statusVerifikasi.label}, ${t.statusVerifikasi.name().toLowerCase()})}"></span></td>
+                            <td><a class="btn btn-line btn-sm" th:href="@{/admin/verifikasi/{id}(id=${t.idTempat})}">Periksa</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card empty" th:if="${#lists.isEmpty(daftar)}">Tidak ada listing pada filter ini.</div>
+
+            <div class="notice" style="margin-top: 16px;"><i class="bi bi-info-circle"></i>
+                <span>Listing dengan data rusak hanya bisa ditolak.</span></div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

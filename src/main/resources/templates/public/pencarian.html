@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Hasil pencarian lapak', 'cari', ~{::main})}">
+<body>
+<main>
+<form th:action="@{/tempat}" method="get">
+    <section class="page-head">
+        <div class="wrap">
+            <nav class="crumb" aria-label="Navigasi">
+                <a th:href="@{/}">Beranda</a><i class="bi bi-chevron-right"></i><a th:href="@{/tempat}">Cari Lapak</a><i class="bi bi-chevron-right"></i><b>Hasil Pencarian</b>
+            </nav>
+            <h1>Hasil pencarian lapak</h1>
+            <div class="search-card flat" style="margin-top: 18px;">
+                <div class="field">
+                    <label for="lokasi">Lokasi</label>
+                    <div class="input-icon"><i class="bi bi-geo-alt"></i>
+                        <input class="input" id="lokasi" type="text" name="lokasi" th:value="${lokasi}" placeholder="Ketik kawasan atau kota"></div>
+                </div>
+                <div class="field">
+                    <span class="lbl">Jenis tempat</span>
+                    <div class="input-icon"><i class="bi bi-building"></i>
+                        <div class="input" id="ringkasJenis" style="padding-left: 38px;" th:text="${#lists.isEmpty(jenisDipilih)} ? 'Semua jenis' : ${#strings.listJoin(jenisDipilih, ', ')}">Semua jenis</div></div>
+                </div>
+                <div class="field">
+                    <label for="anggaran">Anggaran sewa</label>
+                    <div class="input-icon"><i class="bi bi-credit-card"></i>
+                        <select class="select" id="anggaran" name="anggaran">
+                            <option value="" th:selected="${anggaranKunci == '-'}">Pilih rentang harga</option>
+                            <option value="0-1000000" th:selected="${anggaranKunci == '0-1000000'}">Di bawah Rp 1 juta</option>
+                            <option value="1000000-3000000" th:selected="${anggaranKunci == '1000000-3000000'}">Rp 1 – 3 juta</option>
+                            <option value="3000000-7000000" th:selected="${anggaranKunci == '3000000-7000000'}">Rp 3 – 7 juta</option>
+                            <option value="1000000-7000000" th:selected="${anggaranKunci == '1000000-7000000'}">Rp 1 – 7 juta</option>
+                            <option value="7000000-" th:selected="${anggaranKunci == '7000000-'}">Di atas Rp 7 juta</option>
+                        </select></div>
+                </div>
+                <button class="btn btn-dark" type="submit" style="height: 42px;">Cari Lapak</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-body">
+        <div class="wrap search-layout">
+            <aside class="filter" aria-label="Filter">
+                <h2>Filter</h2>
+                <div class="grp">
+                    <span class="lbl">Jenis tempat</span>
+                    <div class="pills">
+                        <label class="pill" th:each="j : ${daftarJenis}">
+                            <input type="checkbox" name="jenis" th:value="${j}" th:checked="${jenisDipilih.contains(j)}"><span th:text="${j}">Kios</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="grp">
+                    <span class="lbl">Periode sewa</span>
+                    <div class="pills">
+                        <label class="pill"><input type="checkbox" name="periode" value="HARI" th:checked="${periodeDipilih.contains('HARI')}"><span>Per hari</span></label>
+                        <label class="pill"><input type="checkbox" name="periode" value="MINGGU" th:checked="${periodeDipilih.contains('MINGGU')}"><span>Per minggu</span></label>
+                        <label class="pill"><input type="checkbox" name="periode" value="BULAN" th:checked="${periodeDipilih.contains('BULAN')}"><span>Per bulan</span></label>
+                    </div>
+                </div>
+                <div class="grp">
+                    <span class="lbl">Rentang harga sewa</span>
+                    <label class="tiny muted" for="min" style="display:block; margin: 6px 0 4px; font-weight: 600;">Minimum</label>
+                    <input class="input" id="min" type="number" min="0" step="any" name="min" placeholder="Rp 1.000.000" th:value="${min}">
+                    <label class="tiny muted" for="max" style="display:block; margin: 10px 0 4px; font-weight: 600;">Maksimum</label>
+                    <input class="input" id="max" type="number" min="0" step="any" name="max" placeholder="Rp 7.000.000" th:value="${max}">
+                </div>
+                <div class="grp">
+                    <span class="lbl">Fasilitas</span>
+                    <div class="pills">
+                        <label class="pill" th:each="f : ${semuaFasilitas}">
+                            <input type="checkbox" name="fas" th:value="${f.idFasilitas}" th:checked="${fasDipilih.contains(f.idFasilitas)}"><span th:text="${f.namaFasilitas}">Listrik</span>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-dark btn-block" type="submit">Terapkan Filter</button>
+                <a class="btn btn-link btn-block" th:href="@{/tempat}">Reset</a>
+            </aside>
+
+            <div>
+                <div class="result-head">
+                    <div>
+                        <h2 th:text="'Menampilkan ' + ${hasil.totalElements} + ' lapak'">Menampilkan 6 lapak</h2>
+                        <div class="small muted" th:if="${lokasi != null and !#strings.isEmpty(lokasi)}"><i class="bi bi-geo-alt"></i> Lokasi acuan: <span th:text="${lokasi}">Jakarta Selatan</span></div>
+                    </div>
+                    <div class="sorter">
+                        <span><i class="bi bi-arrow-down-up"></i> Urutkan:</span>
+                        <label class="pill"><input type="radio" name="sort" value="harga" data-autosubmit th:checked="${sort == 'harga'}"><span>Harga terendah</span></label>
+                        <label class="pill"><input type="radio" name="sort" value="terdekat" data-autosubmit th:checked="${sort == 'terdekat'}"><span>Lokasi terdekat</span></label>
+                    </div>
+                </div>
+
+                <div class="lapak-grid two" th:if="${hasil.hasContent()}">
+                    <th:block th:each="t : ${hasil.content}"><div th:replace="~{fragments/layout :: tempatCard(${t})}"></div></th:block>
+                </div>
+
+                <div class="card empty" th:unless="${hasil.hasContent()}">
+                    <p><strong>Tidak ada lapak yang cocok.</strong></p>
+                    <p>Coba kurangi filter atau perluas rentang harga.</p>
+                    <a class="btn btn-line" th:href="@{/tempat}">Tampilkan semua lapak</a>
+                </div>
+
+                <div class="center" style="margin-top: 22px;" th:if="${hasil.totalElements > hasil.numberOfElements}">
+                    <a class="btn btn-line"
+                       th:href="@{/tempat(lokasi=${lokasi},jenis=${jenisDipilih},periode=${periodeDipilih},fas=${fasDipilih},min=${min},max=${max},sort=${sort},tampil=${tampil + 6})}">Tampilkan Lebih Banyak</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+</main>
+</body>
+</html>

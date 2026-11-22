@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/shell :: shell('Daftar', '', ~{::main})}">
+<body>
+<main class="auth-wrap">
+    <div class="wrap">
+        <div class="auth-card">
+            <div class="auth-side">
+                <div class="ico-big"><i class="bi bi-person"></i></div>
+                <h2>Bergabung dengan TemuLapak</h2>
+                <p>Satu akun untuk mencari tempat berjualan atau menyewakan tempat usaha Anda.</p>
+                <ul>
+                    <li><i class="bi bi-check2"></i>Pilih peran sesuai kebutuhan Anda</li>
+                    <li><i class="bi bi-check2"></i>Isi data singkat, tanpa langkah rumit</li>
+                    <li><i class="bi bi-check2"></i>Mulai cari atau daftarkan tempat</li>
+                </ul>
+            </div>
+            <div class="auth-main">
+                <h1>Buat akun baru</h1>
+                <form th:action="@{/register}" th:object="${form}" method="post" novalidate style="margin-top: 16px;">
+                    <div class="field">
+                        <span class="lbl">Daftar sebagai *</span>
+                        <div class="role-pick">
+                            <label><input type="radio" name="role" value="PENYEWA" th:checked="${form.role == 'PENYEWA'}"><span class="dot"></span>
+                                <span><b>Penyewa</b><small>Saya mencari tempat berjualan</small></span></label>
+                            <label><input type="radio" name="role" value="PEMILIK" th:checked="${form.role == 'PEMILIK'}"><span class="dot"></span>
+                                <span><b>Pemilik Tempat</b><small>Saya ingin menyewakan tempat</small></span></label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="nama">Nama lengkap *</label>
+                        <input class="input" id="nama" type="text" th:field="*{nama}" th:errorclass="invalid" placeholder="Rina Lestari" autocomplete="name">
+                        <div class="hint">Tulis nama sesuai identitas Anda</div>
+                        <div class="err" th:if="${#fields.hasErrors('nama')}" th:errors="*{nama}"></div>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email *</label>
+                        <input class="input" id="email" type="email" th:field="*{email}" th:errorclass="invalid" placeholder="nama@contoh.id" autocomplete="email">
+                        <div class="hint">Email dipakai untuk masuk</div>
+                        <div class="err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                    <div class="field">
+                        <label for="noTelepon">Nomor telepon *</label>
+                        <input class="input" id="noTelepon" type="tel" th:field="*{noTelepon}" th:errorclass="invalid" placeholder="081234567890" autocomplete="tel">
+                        <div class="hint">10 sampai 15 digit angka</div>
+                        <div class="err" th:if="${#fields.hasErrors('noTelepon')}" th:errors="*{noTelepon}"></div>
+                    </div>
+                    <div class="field">
+                        <label for="password">Kata sandi *</label>
+                        <input class="input" id="password" type="password" name="password" placeholder="••••••••" autocomplete="new-password">
+                        <div class="hint">Minimal 8 karakter</div>
+                        <div class="err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <button class="btn btn-dark btn-block" type="submit">Daftar</button>
+                </form>
+                <p class="center" style="margin: 16px 0 0;">Sudah punya akun? <a th:href="@{/login}"><b>Masuk</b></a></p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

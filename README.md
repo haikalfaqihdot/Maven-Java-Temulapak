@@ -46,17 +46,3 @@ Foto yang diunggah disimpan di folder `uploads/` (di luar classpath) dan disajik
 2. **Pemilik** (Bu Sari): Tempat Saya menampilkan status verifikasi dan status tempat terpisah serta catatan admin; Booking Masuk dan konfirmasi/tolak.
 3. **Admin**: Antrean Verifikasi. Listing tanpa foto ("Booth Festival Jajan Cilandak") hanya bisa ditolak dan wajib memakai catatan.
 4. Pemilik pada "Ruko Mungil Cilandak" (pemilik2) tidak bisa mengonfirmasi booking yang bertabrakan dengan booking yang sudah dikonfirmasi.
-
-## Struktur
-`config` (keamanan, web, seeder), `controller`, `service` (aturan bisnis), `repository`, `entity`, `dto`, `exception`, `security`.
-Template di `src/main/resources/templates`, aset di `static/`.
-
-## Catatan
-- Tampilan mengikuti PDF desain Figma (beranda, hasil pencarian, detail, ajukan booking, Booking Saya, masuk/daftar,
-  Tempat Saya, form tempat, Booking Masuk, detail pengajuan, antrean dan periksa listing).
-- Desain memuat data yang tidak ada di ERD awal, sehingga kolom ditambahkan pada `tempat` (ukuran, alamat, kondisi, deskripsi,
-  satuan periode, biaya listrik/air/lain, aturan sewa, catatan admin, tanggal diajukan) dan `booking` (catatan).
-- Foto pada data contoh berupa ilustrasi SVG (foto asli dari Figma tidak ikut). Foto unggahan pemilik disimpan di `uploads/`.
-- Halaman yang tidak ada di Figma (Semua Tempat, Pengguna, Booking, Ulasan untuk admin; profil pemilik; tulis ulasan)
-  memakai gaya yang sama. Menu "Notifikasi" mengarah ke daftar booking karena belum ada fitur notifikasi terpisah.
-- "Lokasi terdekat" pada pencarian diurutkan berdasarkan nama lokasi (belum ada koordinat di data).

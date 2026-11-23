@@ -16,7 +16,7 @@ Java 21, Maven, Spring Boot 3.4, Thymeleaf, Spring Data JPA, Spring Security, **
 # Windows
 mvnw.cmd spring-boot:run
 ```
-Buka http://localhost:8080
+Buka http://localhost:8081
 
 Saat start, aplikasi otomatis:
 1. membuat database `temulapak` bila belum ada,
